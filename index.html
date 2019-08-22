@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Multiple Files</title>
+
+<style>
+    input[type=file], select {
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  div {
+    border-radius: 5px;
+    background-color: #92e2f7;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <h1>Upload Multiple Files</h1>
+<hr>
+
+<form id="uploadForm" action="/uploadmultiple"  enctype="multipart/form-data" method="POST">
+  Select multiple files: <br> <input id="files" type="file" name="filesToUpload" multiple> <br>
+  <input type="submit" value="Upload your files"/>
+  <div>
+    <span id = "status"></span>
+  </div>
+</form>
+
+<hr>
+<hr>
+<div>
+  <p>List of Files:</p>
+  <input id="listfiles" type="submit" value="Get list of uploaded files"/>
+</div>
+<hr>
+<div id="list">
+</div>
+
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#uploadForm').submit(function() {
+		  $("#status").empty().text("File upload in progress...");
+        $(this).ajaxSubmit({
+            error: function(xhr) {
+                $("#status").empty().text("Something went wrong, try selecting and uploading files again.");
+            },
+            success: function(response) {
+              files.innerHTML = "Choose File";
+					    $("#status").empty().text(response);
+            }
+	      });
+	    return false;
+    });
+    $('#listfiles') .click(function(e) {
+      e.preventDefault();
+      $("#list").empty();
+      $.ajax({
+        type: "GET",
+        url: "/getList",
+        success: function(result) {
+          $.each(result, function(index, value){
+            $("#list").append(value + '<br>');
+          });
+        },
+        error: function(result) {
+          $("#list").empty().text("Something went wrong, try selecting and uploading files again.");
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
